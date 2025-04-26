@@ -2,13 +2,9 @@ import React, { useState } from "react";
 import { ethers } from "ethers";
 import abi from "./contract/BuyMeACoffee.json";
 import "./App.css";
-import { BrowserProvider } from 'ethers'; 
 
-
-
-
-
-const contractAddress = "0x432ADf92958B44923B197C870356b07dcDC1a896"; 
+// Contract address from deployment
+const contractAddress = "0x432ADf92958B44923B197C870356b07dcDC1a896";
 
 function App() {
   const [contract, setContract] = useState(null);
@@ -22,9 +18,9 @@ function App() {
     }
 
     try {
-      const ethProvider = new ethers.Web3Provider(window.ethereum);
-      await window.ethereum.request({ method: "eth_requestAccounts" });
-      const signer = ethProvider.getSigner();
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      await provider.send("eth_requestAccounts", []);
+      const signer = await provider.getSigner();
       const contractInstance = new ethers.Contract(contractAddress, abi.abi, signer);
       setContract(contractInstance);
       console.log("Wallet connected!");
@@ -40,7 +36,9 @@ function App() {
       const txn = await contract.buyCoffee(
         name || "anon",
         message || "Enjoy your coffee!",
-        { value: ethers.parseEther("0.001") }
+        {
+          value: ethers.parseEther("0.001"),
+        }
       );
       await txn.wait();
       alert("Coffee bought successfully!");
@@ -55,7 +53,7 @@ function App() {
     <div className="App">
       <h1>Buy Me A Coffee ☕</h1>
       <button onClick={connectWallet}>Connect Wallet</button>
-      
+
       <div className="form">
         <input
           type="text"
@@ -71,7 +69,6 @@ function App() {
         <button onClick={buyCoffee}>Send 0.001 ETH</button>
       </div>
 
-      {/* Footer Section */}
       <footer className="footer">
         <p>Made by <strong>MSC</strong></p>
         <div className="social-links">
