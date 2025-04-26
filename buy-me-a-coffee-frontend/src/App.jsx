@@ -2,6 +2,11 @@ import React, { useState } from "react";
 import { ethers } from "ethers";
 import abi from "./contract/BuyMeACoffee.json";
 import "./App.css";
+import { BrowserProvider } from 'ethers'; 
+
+
+
+
 
 const contractAddress = "0x432ADf92958B44923B197C870356b07dcDC1a896"; 
 
