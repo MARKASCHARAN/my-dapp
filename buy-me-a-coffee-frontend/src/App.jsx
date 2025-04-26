@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { ethers } from "ethers";
 import abi from "./contract/BuyMeACoffee.json";
-
 import "./App.css";
 
 const contractAddress = "0x432ADf92958B44923B197C870356b07dcDC1a896"; 
@@ -11,7 +10,6 @@ function App() {
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
 
-  // Connect to wallet and the contract
   const connectWallet = async () => {
     if (typeof window.ethereum === "undefined") {
       alert("Please install MetaMask!");
@@ -19,10 +17,9 @@ function App() {
     }
 
     try {
-      // Set up provider and signer
-      const ethProvider = new ethers.BrowserProvider(window.ethereum);
-      await window.ethereum.request({ method: "eth_requestAccounts" }); 
-      const signer = await ethProvider.getSigner();
+      const ethProvider = new ethers.Web3Provider(window.ethereum);
+      await window.ethereum.request({ method: "eth_requestAccounts" });
+      const signer = ethProvider.getSigner();
       const contractInstance = new ethers.Contract(contractAddress, abi.abi, signer);
       setContract(contractInstance);
       console.log("Wallet connected!");
@@ -31,21 +28,19 @@ function App() {
     }
   };
 
-  // Function to buy coffee (send transaction)
   const buyCoffee = async () => {
     if (!contract) return alert("Connect your wallet first");
 
     try {
-     
       const txn = await contract.buyCoffee(
-        name || "anon",  
-        message || "Enjoy your coffee!",  
+        name || "anon",
+        message || "Enjoy your coffee!",
         { value: ethers.parseEther("0.001") }
       );
-      await txn.wait();  // Wait for transaction to be mined
+      await txn.wait();
       alert("Coffee bought successfully!");
-      setName("");  // Clear name input
-      setMessage("");  // Clear message input
+      setName("");
+      setMessage("");
     } catch (err) {
       console.error("Transaction failed:", err);
     }
@@ -54,7 +49,6 @@ function App() {
   return (
     <div className="App">
       <h1>Buy Me A Coffee ☕</h1>
-      
       <button onClick={connectWallet}>Connect Wallet</button>
       
       <div className="form">
@@ -71,6 +65,16 @@ function App() {
         />
         <button onClick={buyCoffee}>Send 0.001 ETH</button>
       </div>
+
+      {/* Footer Section */}
+      <footer className="footer">
+        <p>Made by <strong>MSC</strong></p>
+        <div className="social-links">
+          <a href="https://github.com/MARKASCHARAN" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a href="https://www.linkedin.com/in/marka-charan-0a4a9727a/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          <a href="https://x.com/charan_mar68075" target="_blank" rel="noopener noreferrer">Twitter</a>
+        </div>
+      </footer>
     </div>
   );
 }
